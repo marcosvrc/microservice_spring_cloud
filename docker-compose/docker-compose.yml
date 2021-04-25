@@ -1,0 +1,43 @@
+version: '3'
+services: 
+  rabbitmq:
+    image: rabbitmq:3.8-management
+    container_name: 'rabbitmq'
+    ports: 
+      - 5672:5672
+      - 15672:15672
+    volumes: 
+      - $PWD/storage/rabbitmq3:/var/lib/rabbitmq
+    environment: 
+      - RABBITMQ_ERLANG_COOKIE=secret_pass
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+  
+  mysqlsrv:
+    image: mysql:8
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=admin
+      - MYSQL_USER=admin
+      - MYSQL_DATABASE=crud
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql_db:/var/lib/mysql
+    networks:
+      - mysql-compose-network
+    
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+    networks:
+      - mysql-compose-network
+    
+networks: 
+  mysql-compose-network:
+    driver: bridge
+
+volumes: 
+  rabbitmq:
+  mysql_db:
